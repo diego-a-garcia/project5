@@ -1,0 +1,31 @@
+####LRU
+max_size = 15
+
+###From textbook example
+def lruGarcia(data, entry):
+    if entry in data:
+        data.remove(entry)
+        data.append(entry)
+        return data, 0
+    else:
+        data.append(entry)
+
+        ##Checking if the queue is full or not
+        if len(data) > max_size:
+            data.pop(0)
+        return data, 1
+
+
+if __name__ == "__main__":
+    data = [0, 1, 2, 3]
+    rs = [2, 0, 3, 1, 4, 1, 0]
+    pf_counter = 0
+
+    print(data, "\n")
+    ### From Textbook
+    for entry in rs:
+        print("\nlru update", entry)
+        queue_data, pf = lru_update(data, entry)
+        pf_counter += pf
+        print("New Queue:", data)
+        print("Page Faults:", pf_counter)
