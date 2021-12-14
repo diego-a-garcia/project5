@@ -1,0 +1,72 @@
+## imports ###########################
+import random
+import sys
+from FIFO import fifo_update
+from LRU import lruGarcia
+
+## functions #########################
+
+# RS = reference string         ---> initially empty
+# P = virtual memory size       ---> large integer, ex P = 2^20
+# s = starting location         ---> may be 0
+# size of locus L = e           ---> small integer representing current locus, ex 10
+# rate of motion = m            ---> each page in L is typically referenced only a few 100 times, ex 200
+# probability of transition: t  ---> real number close to 0, transitions are rare
+
+max_RS_length = 500000
+
+
+def generate_refstring(P, s, e, m, t):
+    RS = []
+
+    # repeat until desired length is created
+    while len(RS) < max_RS_length:
+        # select m random numbers in range of [s:s+e]
+        # m random numbers are selected before L is shifted to the right
+        for i in range(m):
+            temp = random.randint(s, s + e)
+            temp %= P
+            # append number to RS
+            RS.append(temp)
+
+        # generate random number r in range of [0:1]
+        r = random.random()
+        # if (r<t), generate new s
+        if (r < t):
+            s = random.randint(0, P)
+            s %= P
+        # else increment s by 1, modulo P
+        else:
+            s += 1
+            s %= P
+
+    # truncate if RS is greater than desired length
+    if (len(RS) > max_RS_length):
+        RS = RS[:max_RS_length]
+
+    return RS
+
+
+## main ##############################
+if __name__ == "__main__":
+    RS = generate_refstring(1000000, 0, 10, 200, 0.15)
+
+    # assume there are no resident pages, all page frames
+    # are empty, thus the first 15 UNIQUE elements will generate
+    # a page fault
+
+    queue = []
+    pf_counter = 0
+    for i in range(len(RS)):
+        queue, pf = fifo_update(queue, RS[i])
+        pf_counter += pf
+
+    print("FIFO page faults: " + str(pf_counter))
+
+    queue = []
+    pf_counter = 0
+    for i in range(len(RS)):
+        queue, pf = lruGarcia(queue, RS[i])
+        pf_counter += pf
+
+    print("LRU page faults: " + str(pf_counter))
