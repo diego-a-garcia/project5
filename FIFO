@@ -1,0 +1,39 @@
+###FIFO
+max_size = 15
+
+
+# returns the list_data, and if there was a page fault
+def fifo_update(list_data, entry):
+    if entry in list_data:
+        # no page faults
+        return list_data, 0
+    # if the queue is full
+    if (len(list_data) >= max_size):
+        # pop out first element of queue
+        list_data.pop(0)
+    # add newest element to end of queue
+    list_data.append(entry)
+    return list_data, 1
+
+
+#########################################################
+if __name__ == "__main__":
+    list_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    # prints list_data
+    print(list_data, "\n")
+
+    pf_counter = 0
+
+    print("\nfifo update 3")
+    list_data, temp = fifo_update(list_data, 3)
+    pf_counter += temp
+    print(list_data)
+    print("page faults:", pf_counter)
+
+    print("\nfifo update 11")
+    list_data, temp = fifo_update(list_data, 11)
+    pf_counter += temp
+    print(list_data)
+    print("page faults:", pf_counter)
+
